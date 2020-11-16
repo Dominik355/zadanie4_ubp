@@ -39,8 +39,7 @@ public class UserRepository {
             PreparedStatement ps = connection.prepareStatement(GET_ALL_USERNAMES);
             ResultSet result = ps.executeQuery();
             while(result.next()) {
-                System.out.println("user found");
-                users.add(result.getString("username"));
+                users.add(result.getString("username") + "\n");
             }
             ps.close();
         } catch (SQLException e) {

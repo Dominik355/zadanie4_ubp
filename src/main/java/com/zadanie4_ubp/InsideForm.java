@@ -1,6 +1,5 @@
 package com.zadanie4_ubp;
 
-import java.util.List;
 import javax.swing.JFrame;
 
 
@@ -153,7 +152,12 @@ public class InsideForm extends javax.swing.JFrame {
     }//GEN-LAST:event_minimalizeButtonActionPerformed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
-        // TODO add your handling code here:
+        LoginFrame login = new LoginFrame();
+        login.setVisible(true);
+        login.pack();
+        login.setLocationRelativeTo(null);
+        login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.dispose();
     }//GEN-LAST:event_logoutButtonActionPerformed
 /*
     public static void main(String args[]) {

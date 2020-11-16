@@ -1,16 +1,19 @@
 
 package com.zadanie4_ubp;
 
-import com.zadanie4_ubp.storage.DatabaseConnection;
 import com.zadanie4_ubp.storage.UserCredentials;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import javax.swing.JFrame;
 
 
 public class LoginFrame extends javax.swing.JFrame {
+    //pre nanosekundy
+    private static final Long LOGIN_GAP_KONST = 1000000L;
 
     private Service service;
-    private int attempts;
+    private Long attempts = 0L;
+    //treba nastavit pociatocnu hodnotu, aby to nepadlo pri prvom prihlaseni
     private LocalDateTime lastAttempt;
     
     public LoginFrame() {
@@ -19,6 +22,7 @@ public class LoginFrame extends javax.swing.JFrame {
         // vzdy ri vytvoreni login screenu sa vytvori instancia servis triedy, tym padom
         // aj DB 
         this.service = Service.getInstance();
+        this.lastAttempt = LocalDateTime.now();
     }
 
     /**
@@ -210,27 +214,36 @@ public class LoginFrame extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_registerButtonActionPerformed
 
+    //skontroluje, ci su vyplnene policka a posle do servisu na prihlasenie
+    //casove rozostupy su robene tak, ze sa zoberie ocet pokusov , prenasobi konstantnou hodnotou, a po tuto dobu
+    //sa toto tlacitko neda pouzit
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        UserCredentials credentials = new UserCredentials(
-                usernameField.getText(),
-                passwordField.getPassword()
-        );
-        if(credentials.getUsername() != null
-                && credentials.getPassword().length > 0) {
-            String username = service.login(credentials);
-            if(username != null) {
-                InsideForm register = new InsideForm(username);
-                register.setVisible(true);
-                register.pack();
-                register.setLocationRelativeTo(null);
-                register.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                this.dispose();
+        if(LocalDateTime.now().minusNanos(LOGIN_GAP_KONST*attempts).isAfter(lastAttempt)) {
+            UserCredentials credentials = new UserCredentials(
+                    usernameField.getText(),
+                    passwordField.getPassword()
+            );
+            if(credentials.getUsername() != null
+                    && credentials.getPassword().length > 0) {
+                String username = service.login(credentials);
+                if(username != null) {
+                    InsideForm register = new InsideForm(username);
+                    register.setVisible(true);
+                    register.pack();
+                    register.setLocationRelativeTo(null);
+                    register.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    this.dispose();
+                    return;
+                }
             }
+            PopUpWindow.showPopUp("Wrong credentials");
         } else {
-            PopUpWindow.showPopUp("Username or Password not defined");
-            usernameField.setText("");
-            passwordField.setText("");
+            PopUpWindow.showPopUp("Login Timeout");
         }
+        attempts += 1;
+        lastAttempt = LocalDateTime.now();
+        usernameField.setText("");
+        passwordField.setText("");
     }//GEN-LAST:event_loginButtonActionPerformed
 
     /**

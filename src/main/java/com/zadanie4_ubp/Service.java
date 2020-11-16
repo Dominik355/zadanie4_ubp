@@ -2,18 +2,11 @@ package com.zadanie4_ubp;
 
 import com.zadanie4_ubp.storage.Converters;
 import com.zadanie4_ubp.storage.DatabaseConnection;
-import static com.zadanie4_ubp.storage.DatabaseConnection.DB_FILE_NAME;
-import static com.zadanie4_ubp.storage.DatabaseConnection.DB_URL;
 import com.zadanie4_ubp.storage.User;
 import com.zadanie4_ubp.storage.UserCredentials;
 import com.zadanie4_ubp.storage.UserRegistration;
 import com.zadanie4_ubp.storage.UserRepository;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 
@@ -59,6 +52,7 @@ public class Service {
         }
     }
     
+    //zavola funkciu v PasswordService na porovnanie ulozeneho a zadaneho hesla
     //pokial je prihlasenie uspesne, vratim meno uzivatela
     public String login(UserCredentials credentials) {
         User user = userRepository.getUserByUsername(credentials.getUsername());
@@ -85,7 +79,12 @@ public class Service {
                 if(passwordService.isPasswordValid(registration.getPassword())) {
                     return true;
                 } else {
-                    PopUpWindow.showPopUp("Password does not match requirements");
+                    PopUpWindow.showPopUp("Password does not match requirements, needed:\n"
+                            + "at least 1 capital \n"
+                            + "at least 1 small letter \n"
+                            + "at least 1 digit \n"
+                            + "not 3 same chars in a row \n"
+                            + "or your password is globally well-known \n");
                 }
             } else {
                 PopUpWindow.showPopUp("Passwords do not match");
@@ -109,6 +108,7 @@ public class Service {
         return service;
     }
     
+    //vola sa pri ukonceni programu
     public void closeDbConnection() {
         this.dbConnection.closeConnection();
     }

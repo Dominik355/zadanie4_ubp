@@ -81,7 +81,7 @@ public class DatabaseConnection {
     public void closeConnection() {
         try {
             this.connection.close();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Problem while closing DB connection, message: " + e.getMessage());
         }
     }
